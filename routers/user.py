@@ -64,7 +64,7 @@ def user(user_id: int, db: Session = Depends(get_db), current_user: User = Depen
     if not user:
         raise HTTPException(
             status_code=404,
-            detail="User not found"
+            detail="User isnot found"
         )
     db.delete(user)
     db.commit()
