@@ -1,0 +1,42 @@
+class App:
+    def __init__(self):
+        self.routes = []
+
+    def post(self, path):
+        def decorator(fn):
+            self.routes.append({
+                "method": "post",
+                "path": path,
+                "handler": fn
+            })
+            return fn
+        return decorator
+
+
+app = App()
+
+
+@app.post("welcome")
+def welcome():
+    print("Hello welcome")
+
+
+verb = input("Enter request type: ").lower()
+
+valid_verbs = ["get", "post", "delete", "put", "patch"]
+
+if verb in valid_verbs:
+    end_point = input("Enter endpoint: ")
+
+    found = False
+
+    for route in app.routes:
+        if route["method"] == verb and route["path"] == end_point:
+            route["handler"]()
+            found = True
+            break
+
+    if not found:
+        print("404 Not Found")
+else:
+    print("Invalid HTTP verb")
