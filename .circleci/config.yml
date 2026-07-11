@@ -48,19 +48,19 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
-            docker build -t docker-prac .
+            docker build -t dock_prac .
 
       - run:
           name: Tag Docker Image
           command: |
-            docker tag docker-prac:latest \
+            docker tag dock_prac:latest \
             $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/docker-prac:latest
 
       - run:
           name: Push Docker Image
           command: |
             docker push \
-            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/docker-prac:latest
+            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/dock_prac:latest
 
 workflows:
   version: 2
