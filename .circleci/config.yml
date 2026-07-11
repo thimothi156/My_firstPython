@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Tag Docker Image
           command: |
-            docker tag my-fastapi-app:latest \
+            docker tag docker-prac:latest \
             $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/docker-prac:latest
 
       - run:
