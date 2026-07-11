@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  aws-cli: circleci/aws-cli@5.1.0
-
 jobs:
   test:
     docker:
@@ -28,32 +25,47 @@ jobs:
             - venv
 
   push_image:
-    machine: true
+    docker:
+      - image: cimg/python:3.10
 
     steps:
       - checkout
-
-      - aws-cli/setup
+      - setup_remote_docker
 
       - run:
-          name: Push Docker Image to ECR
+          name: Install AWS CLI
+          command: |
+            pip install awscli
+
+      - run:
+          name: Login to ECR
           command: |
             aws ecr get-login-password --region $AWS_REGION \
-            | docker login --username AWS --password-stdin \
-            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+            | docker login \
+              --username AWS \
+              --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
+      - run:
+          name: Build Docker Image
+          command: |
             docker build -t my-fastapi-app .
 
+      - run:
+          name: Tag Docker Image
+          command: |
             docker tag my-fastapi-app:latest \
             $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-fastapi-app:latest
 
+      - run:
+          name: Push Docker Image
+          command: |
             docker push \
             $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-fastapi-app:latest
 
 workflows:
   version: 2
 
-  build_test_deploy:
+  build_and_push:
     jobs:
       - test
 
@@ -63,4 +75,4 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
