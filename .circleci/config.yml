@@ -54,7 +54,7 @@ jobs:
           name: Tag Docker Image
           command: |
             docker tag dock_prac:latest \
-            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/docker-prac:latest
+            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/dock_prac:latest
 
       - run:
           name: Push Docker Image
