@@ -60,7 +60,7 @@ jobs:
           name: Push Docker Image
           command: |
             docker push \
-            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-fastapi-app:latest
+            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/docker-prac:latest
 
 workflows:
   version: 2
