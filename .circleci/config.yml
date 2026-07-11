@@ -48,13 +48,13 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
-            docker build -t my-fastapi-app .
+            docker build -t docker-prac .
 
       - run:
           name: Tag Docker Image
           command: |
             docker tag my-fastapi-app:latest \
-            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-fastapi-app:latest
+            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/docker-prac:latest
 
       - run:
           name: Push Docker Image
