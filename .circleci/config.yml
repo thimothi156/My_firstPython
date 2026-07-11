@@ -1,24 +1,66 @@
 version: 2.1
 
+orbs:
+  aws-cli: circleci/aws-cli@5.1.0
+
 jobs:
-  build:
+  test:
     docker:
       - image: cimg/python:3.10
+
     steps:
       - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+
       - run:
           name: Install dependencies
           command: |
             python -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          paths:
+            - venv
+
+  push_image:
+    machine: true
+
+    steps:
+      - checkout
+
+      - aws-cli/setup
+
       - run:
-          name: Run tests
+          name: Push Docker Image to ECR
           command: |
-            . venv/bin/activate
+            aws ecr get-login-password --region $AWS_REGION \
+            | docker login --username AWS --password-stdin \
+            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+            docker build -t my-fastapi-app .
+
+            docker tag my-fastapi-app:latest \
+            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-fastapi-app:latest
+
+            docker push \
+            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-fastapi-app:latest
 
 workflows:
   version: 2
-  build_and_test:
+
+  build_test_deploy:
     jobs:
-      - build
+      - test
+
+      - push_image:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
